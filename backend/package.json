@@ -5,7 +5,7 @@
   "private": "true",
   "scripts": {
     "server:build": "tsc",
-    "server:dev": "concurrently \"tsc --watch --preserveWatchOutput\" \"tsx watch --env-file=.env ./src/server.ts\"",
+    "server:dev": "tsx watch --env-file=.env ./src/server.ts",
     "server:test": "jest",
     "server:update": "npx depcheck & npx typesync & npx ncu -u & npm i",
     "server:watch": "tsc --watch --preserveWatchOutput"

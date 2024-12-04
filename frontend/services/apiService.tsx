@@ -93,6 +93,10 @@ export default class APIService {
         return this.fetchAPIResponse('/admin/get_rooms');
     }
 
+    static async getCoursesAdmin(): Promise<CoursePopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_courses');
+    }
+
     static async registerUser(registerData: Pick<UserPopulated, 'username' | 'password' | 'fullName'>) {
         const body = new URLSearchParams();
         body.append('username', registerData.username);

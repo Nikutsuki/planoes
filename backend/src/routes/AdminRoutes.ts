@@ -55,5 +55,13 @@ export default class AdminRoutes {
             const rooms = await model_rooms.find().limit(10);
             res.status(200).json(rooms);
         });
+
+        app.get(this.prefix + '/get_courses', async (req: Request, res: Response) => {
+            const model_courses: Model<HydratedDocumentFromSchema<typeof CourseSchema>> = new CourseController().base.model;
+            const filter_courses: FilterQuery<HydratedDocumentFromSchema<typeof CourseSchema>> = {};
+
+            const courses = await model_courses.find().limit(10);
+            res.status(200).json(courses);
+        });
     }
 }

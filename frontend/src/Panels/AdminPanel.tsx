@@ -1,12 +1,14 @@
 import "./admin_panel.css";
 import {useEffect, useState} from "react";
 import apiService from "../../services/apiService.tsx";
+import BuildingEditPopup from "../Components/Admin/Popups/BuildingEditPopup.tsx";
 
 const AdminPanel : React.FC = () => {
     const [entryCount, setEntryCount] = useState({});
     const [tableData, setTableData] = useState([]);
     const [tableColumns, setTableColumns] = useState([]);
     const [tableTitle, setTableTitle] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -17,7 +19,7 @@ const AdminPanel : React.FC = () => {
         fetchData();
     }, []);
 
-    function handleButtonClick(e: React.MouseEventHandler<HTMLButtonElement>) {
+    function handleListButtonClick(e: React.MouseEventHandler<HTMLButtonElement>) {
         switch (e.currentTarget.id) {
             case "buildings":
                 fetchBuildings();
@@ -26,6 +28,10 @@ const AdminPanel : React.FC = () => {
             case "rooms":
                 fetchRooms();
                 setTableTitle("Sale");
+                break;
+            case "courses":
+                fetchCourses();
+                setTableTitle("Kursy");
                 break;
             default:
                 break;
@@ -41,7 +47,6 @@ const AdminPanel : React.FC = () => {
 
         table_data.forEach((row) => {
             try {
-                console.log(row[4]);
                 row[4] = row[4].map((room) => room.number || room.numberSecondary).join(", ");
             } catch (err) {
                 row[4] = "";
@@ -63,16 +68,38 @@ const AdminPanel : React.FC = () => {
         setTableData(table_data);
     }
 
+    async function fetchCourses() {
+        const data = await apiService.getCoursesAdmin();
+        let table_columns = Object.keys(data[0]);
+        console.log(data);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
+
+    function handleActionElementEditClick(e: React.MouseEventHandler<HTMLButtonElement>) {
+        console.log(e.currentTarget.parentElement?.parentElement?.parentElement.id);
+        setShowPopup(true);
+    }
+
     return (
         <div className="container-fluid bg-dark-subtle main">
+            {showPopup ? <BuildingEditPopup onClose={() => setShowPopup(false)}/> : null}
             <ul className="button_list">
-                <button id="buildings" className="d-flex justify-content-between align-items-center button" onClick={handleButtonClick}>
+                <button id="buildings" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
                     Budynki
                     <span className="badge bg-primary rounded-pill">{ entryCount["buildings"] }</span>
                 </button>
-                <button id="rooms" className="d-flex justify-content-between align-items-center button" onClick={handleButtonClick}>
+                <button id="rooms" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
                     Sale
                     <span className="badge bg-primary rounded-pill">{ entryCount["rooms"] }</span>
+                </button>
+                <button id="courses" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Kursy
+                    <span className="badge bg-primary rounded-pill">{ entryCount["courses"] }</span>
                 </button>
             </ul>
             <div id="table_container">
@@ -108,7 +135,7 @@ const AdminPanel : React.FC = () => {
                                 })}
                                 <td className="fixed_width">
                                     <div className="table_actions_container">
-                                        <button className="btn btn-primary">Edytuj</button>
+                                        <button className="btn btn-primary" onClick={handleActionElementEditClick}>Edytuj</button>
                                         <button className="btn btn-danger">Usuń</button>
                                     </div>
                                 </td>

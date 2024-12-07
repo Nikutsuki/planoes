@@ -60,7 +60,7 @@ export default class AdminRoutes {
             const model_courses: Model<HydratedDocumentFromSchema<typeof CourseSchema>> = new CourseController().base.model;
             const filter_courses: FilterQuery<HydratedDocumentFromSchema<typeof CourseSchema>> = {};
 
-            const courses = await model_courses.find().limit(10);
+            const courses = await model_courses.find().limit(10).populate("electiveSubjects")
             res.status(200).json(courses);
         });
     }

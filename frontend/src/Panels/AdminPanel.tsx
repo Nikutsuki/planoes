@@ -7,8 +7,10 @@ const AdminPanel : React.FC = () => {
     const [entryCount, setEntryCount] = useState({});
     const [tableData, setTableData] = useState([]);
     const [tableColumns, setTableColumns] = useState([]);
+    const [tablePopupData, setTablePopupData] = useState({});
     const [tableTitle, setTableTitle] = useState("");
-    const [showPopup, setShowPopup] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [selectedObjectId, setSelectedObjectId] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,6 +42,7 @@ const AdminPanel : React.FC = () => {
 
     async function fetchBuildings() {
         const data = await apiService.getBuildingsAdmin();
+        setTablePopupData(data);
         let table_columns = Object.keys(data[0]);
         let table_data = data.map((row) => {
             return Object.values(row);
@@ -59,6 +62,7 @@ const AdminPanel : React.FC = () => {
 
     async function fetchRooms() {
         const data = await apiService.getRoomsAdmin();
+        setTablePopupData(data);
         let table_columns = Object.keys(data[0]);
         let table_data = data.map((row) => {
             return Object.values(row);
@@ -70,11 +74,28 @@ const AdminPanel : React.FC = () => {
 
     async function fetchCourses() {
         const data = await apiService.getCoursesAdmin();
+        setTablePopupData(data);
         let table_columns = Object.keys(data[0]);
-        console.log(data);
         let table_data = data.map((row) => {
             return Object.values(row);
         });
+
+        table_data.forEach((row) => {
+            try {
+                row[7] = row[7].map((course) => course.academicYear).join(", ");
+            } catch (err) {
+                row[7] = "";
+            }
+        })
+
+        table_data.forEach((row) => {
+            try {
+                console.log(row)
+                row[8] = row[8].map((course) =>  course.name).join(", ");
+            } catch (err) {
+                row[8] = "";
+            }
+        })
 
         setTableColumns(table_columns);
         setTableData(table_data);
@@ -82,12 +103,25 @@ const AdminPanel : React.FC = () => {
 
     function handleActionElementEditClick(e: React.MouseEventHandler<HTMLButtonElement>) {
         console.log(e.currentTarget.parentElement?.parentElement?.parentElement.id);
-        setShowPopup(true);
+        setSelectedObjectId(e.currentTarget.parentElement?.parentElement?.parentElement.id);
+        setShowEditPopup(true);
     }
 
     return (
         <div className="container-fluid bg-dark-subtle main">
-            {showPopup ? <BuildingEditPopup onClose={() => setShowPopup(false)}/> : null}
+            {(() => {
+    switch (tableTitle) {
+        case "Budynki":
+            return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId}/> : null;
+        // Add other cases for different popups here
+            case "Sale":
+            return null;
+        case "Kursy":
+            return null;
+        default:
+            return null;
+    }
+})()}
             <ul className="button_list">
                 <button id="buildings" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
                     Budynki

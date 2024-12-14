@@ -21,7 +21,7 @@ const AdminPanel : React.FC = () => {
         fetchData();
     }, []);
 
-    function handleListButtonClick(e: React.MouseEventHandler<HTMLButtonElement>) {
+    function handleListButtonClick(e: React.MouseEvent<HTMLButtonElement>) {
         switch (e.currentTarget.id) {
             case "buildings":
                 fetchBuildings();
@@ -34,6 +34,30 @@ const AdminPanel : React.FC = () => {
             case "courses":
                 fetchCourses();
                 setTableTitle("Kursy");
+                break;
+            case "users":
+                fetchUsers();
+                setTableTitle("Użytkownicy");
+                break;
+            case "classes":
+                fetchClasses();
+                setTableTitle("Zajęcia");
+                break;
+            case "classtypes":
+                fetchClassTypes();
+                setTableTitle("Typy Zajęć");
+                break;
+            case "electivesubjects":
+                fetchElectiveSubjects();
+                setTableTitle("Przedmioty Obieralne");
+                break;
+            case "faculties":
+                fetchFaculties();
+                setTableTitle("Wydziały");
+                break;
+            case "periods":
+                fetchPeriods();
+                setTableTitle("Okresy");
                 break;
             default:
                 break;
@@ -91,7 +115,7 @@ const AdminPanel : React.FC = () => {
         table_data.forEach((row) => {
             try {
                 console.log(row)
-                row[8] = row[8].map((course) =>  course.name).join(", ");
+                row[8] = row[8].map((course) => course.name).join(", ");
             } catch (err) {
                 row[8] = "";
             }
@@ -101,6 +125,77 @@ const AdminPanel : React.FC = () => {
         setTableData(table_data);
     }
 
+    async function fetchUsers() {
+        const data = await apiService.getUsersAdmin();
+        setTablePopupData(data);
+        let table_columns = Object.keys(data[0]);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
+
+    async function fetchClasses() {
+        const data = await apiService.getClassesAdmin();
+        setTablePopupData(data);
+        let table_columns = Object.keys(data[0]);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
+
+    async function fetchClassTypes() {
+        const data = await apiService.getClassTypesAdmin();
+        setTablePopupData(data);
+        let table_columns = Object.keys(data[0]);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
+
+    async function fetchElectiveSubjects() {
+        const data = await apiService.getElectiveSubjectsAdmin();
+        setTablePopupData(data);
+        let table_columns = Object.keys(data[0]);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
+
+    async function fetchFaculties() {
+        const data = await apiService.getFacultiesAdmin();
+        setTablePopupData(data);
+        let table_columns = Object.keys(data[0]);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
+
+    async function fetchPeriods() {
+        const data = await apiService.getPeriodsAdmin();
+        setTablePopupData(data);
+        let table_columns = Object.keys(data[0]);
+        let table_data = data.map((row) => {
+            return Object.values(row);
+        });
+
+        setTableColumns(table_columns);
+        setTableData(table_data);
+    }
     function handleActionElementEditClick(e: React.MouseEventHandler<HTMLButtonElement>) {
         console.log(e.currentTarget.parentElement?.parentElement?.parentElement.id);
         setSelectedObjectId(e.currentTarget.parentElement?.parentElement?.parentElement.id);
@@ -113,7 +208,7 @@ const AdminPanel : React.FC = () => {
     switch (tableTitle) {
         case "Budynki":
             return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId}/> : null;
-        // Add other cases for different popups here
+
             case "Sale":
             return null;
         case "Kursy":
@@ -125,15 +220,39 @@ const AdminPanel : React.FC = () => {
             <ul className="button_list">
                 <button id="buildings" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
                     Budynki
-                    <span className="badge bg-primary rounded-pill">{ entryCount["buildings"] }</span>
+                    <span className="badge bg-primary rounded-pill">{entryCount["buildings"]}</span>
                 </button>
-                <button id="rooms" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
-                    Sale
-                    <span className="badge bg-primary rounded-pill">{ entryCount["rooms"] }</span>
+                <button id="classes" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Zajęcia
+                    <span className="badge bg-primary rounded-pill">{entryCount["classes"]}</span>
+                </button>
+                <button id="classtypes" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Typy Zajęć
+                    <span className="badge bg-primary rounded-pill">{entryCount["classtypes"]}</span>
                 </button>
                 <button id="courses" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
                     Kursy
-                    <span className="badge bg-primary rounded-pill">{ entryCount["courses"] }</span>
+                    <span className="badge bg-primary rounded-pill">{entryCount["courses"]}</span>
+                </button>
+                <button id="electivesubjects" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Przedmioty Obieralne
+                    <span className="badge bg-primary rounded-pill">{entryCount["electivesubjects"]}</span>
+                </button>
+                <button id="faculties" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Wydziały
+                    <span className="badge bg-primary rounded-pill">{entryCount["faculties"]}</span>
+                </button>
+                <button id="periods" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Okresy
+                    <span className="badge bg-primary rounded-pill">{entryCount["periods"]}</span>
+                </button>
+                <button id="rooms" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Sale
+                    <span className="badge bg-primary rounded-pill">{entryCount["rooms"]}</span>
+                </button>
+                <button id="users" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
+                    Użytkownicy
+                    <span className="badge bg-primary rounded-pill">{entryCount["users"]}</span>
                 </button>
             </ul>
             <div id="table_container">

@@ -97,6 +97,30 @@ export default class APIService {
         return this.fetchAPIResponse('/admin/get_courses');
     }
 
+    static async getUsersAdmin(): Promise<UserPopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_users');
+    }
+
+    static async getClassesAdmin(): Promise<ClassPopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_classes');
+    }
+
+    static async getClassTypesAdmin(): Promise<ClassTypePopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_classtypes');
+    }
+
+    static async getElectiveSubjectsAdmin(): Promise<ElectiveSubjectPopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_electivesubjects');
+    }
+
+    static async getFacultiesAdmin(): Promise<FacultyPopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_faculties');
+    }
+
+    static async getPeriodsAdmin(): Promise<PeriodPopulated[] | null> {
+        return this.fetchAPIResponse('/admin/get_periods');
+    }
+
     static async registerUser(registerData: Pick<UserPopulated, 'username' | 'password' | 'fullName'>) {
         const body = new URLSearchParams();
         body.append('username', registerData.username);

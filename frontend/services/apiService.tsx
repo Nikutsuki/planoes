@@ -14,6 +14,7 @@ import {
     TimetablePopulated,
     UserPopulated,
 } from './databaseTypes.tsx';
+import Building from "../../backend/src/models/faculty/Building.ts";
 
 // TODO: replace url with .env variable
 const dbUrl: string = 'https://127.0.0.1:3000';
@@ -95,6 +96,65 @@ export default class APIService {
 
     static async getCoursesAdmin(): Promise<CoursePopulated[] | null> {
         return this.fetchAPIResponse('/admin/get_courses');
+    }
+
+    static async editBuildingAdmin(building: Building) {
+        let body = new URLSearchParams();
+        body.append('building', JSON.stringify(building));
+
+        try {
+            const response: Response = await fetch(dbUrl + '/admin/edit_building', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+
+            if (!response.ok) {
+                console.error(response.statusText);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    static async addBuildingAdmin(building: Building) {
+        let body = new URLSearchParams();
+        body.append('building', JSON.stringify(building));
+        console.log(building);
+        console.log(body);
+
+        try {
+            const response: Response = await fetch(dbUrl + '/admin/add_building', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+
+            if (!response.ok) {
+                console.error(response.statusText);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    static async deleteBuildingAdmin(building: Building) {
+        let body = new URLSearchParams();
+        body.append('building', JSON.stringify(building));
+
+        try {
+            const response: Response = await fetch(dbUrl + '/admin/delete_building', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+
+            if (!response.ok) {
+                console.error(response.statusText);
+            }
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     static async registerUser(registerData: Pick<UserPopulated, 'username' | 'password' | 'fullName'>) {

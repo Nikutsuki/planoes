@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './popup.css';
 import apiService from "../../../../services/apiService.tsx";
 
-const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tableData, object_id : string}> = ({ onClose, tableColumns, tableData, object_id }, ) => {
+const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tableData, object_id : string, isCreate : boolean}> = ({ onClose, tableColumns, tableData, object_id,  isCreate}, ) => {
     const [data, setData] = useState({});
     const [availableRooms, setAvailableRooms] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -11,13 +11,23 @@ const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tab
     const [showSearchPopup, setShowSearchPopup] = useState(false);
 
     useEffect(() => {
-        const obj = {};
-        const selectedObject = tableData.filter((row) => row._id === object_id)[0];
-        fetch_rooms();
-        selectedObject.rooms.forEach((room) => {
-            selectedRooms.push(room);
-        })
-        setData(selectedObject);
+        if(isCreate)
+        {
+            fetch_rooms();
+            const obj = {};
+            obj.rooms = [];
+            setData(obj);
+        }
+        else {
+            const obj = {};
+            const selectedObject = tableData.filter((row) => row._id === object_id)[0];
+            fetch_rooms();
+            if (!selectedObject.rooms) selectedObject.rooms = [];
+            selectedObject.rooms.forEach((room) => {
+                selectedRooms.push(room);
+            })
+            setData(selectedObject);
+        }
     }, []);
 
     async function fetch_rooms() {
@@ -54,7 +64,36 @@ const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tab
         }
     };
 
+    const submit = async () => {
+        if(isCreate)
+        {
+            let rooms = selectedRooms;
+            rooms = rooms.filter((room) => !roomsForDeletion.includes(room));
+            setSelectedRooms(rooms);
+            setRoomsForDeletion([]);
+            const obj = data;
 
+            rooms = rooms.map((room) => room._id);
+
+            obj.rooms = rooms;
+
+            apiService.addBuildingAdmin(obj);
+            return;
+        }
+        let rooms = selectedRooms;
+        rooms = rooms.filter((room) => !roomsForDeletion.includes(room));
+        setSelectedRooms(rooms);
+        setRoomsForDeletion([]);
+        const obj = data;
+
+        rooms = rooms.map((room) => room._id);
+
+        obj.rooms = rooms;
+
+        apiService.editBuildingAdmin(obj);
+
+        console.log(obj)
+    }
 
     return (
         <div className="background" onClick={onClose}>
@@ -73,7 +112,6 @@ const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tab
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         onFocus={() => setShowSearchPopup(true)}
-                                        onBlur={() => setShowSearchPopup(false)}
                                     />
                                     {showSearchPopup && (
                                         <div className="search_popup">
@@ -81,7 +119,7 @@ const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tab
                                                 <div
                                                     key={room._id}
                                                     className="search_popup_item"
-                                                    onClick={() => handleRoomAdd(room)}
+                                                    onClick={() => {handleRoomAdd(room); setShowSearchPopup(false)}}
                                                 >
                                                     {room.number || room.numberSecondary}
                                                 </div>
@@ -120,7 +158,12 @@ const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tab
                             )}
                         </div>
                     ))}
-                    <button type="button" onClick={onClose}>Close</button>
+                    <div className="p-2 d-flex justify-content-between">
+                        <button type="button" className="btn btn-primary" onClick={() => submit()}>
+                            Zapisz
+                        </button>
+                        <button type="button" className="btn btn-danger" onClick={onClose}>Zamknij</button>
+                    </div>
                 </form>
             </div>
         </div>

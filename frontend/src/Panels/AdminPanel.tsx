@@ -8,15 +8,19 @@ const AdminPanel : React.FC = () => {
     const [tableData, setTableData] = useState([]);
     const [tableColumns, setTableColumns] = useState([]);
     const [tablePopupData, setTablePopupData] = useState({});
-    const [tableTitle, setTableTitle] = useState("");
+    const [tableTitle, setTableTitle] = useState("Budynki");
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [selectedObjectId, setSelectedObjectId] = useState("");
+    const [isCreate, setIsCreate] = useState(false);
+    const [tableColumnsNoId, setTableColumnsNoId] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             const data = await apiService.getEntriesCount();
             setEntryCount(data);
         };
+
+        fetchBuildings();
 
         fetchData();
     }, []);
@@ -40,25 +44,31 @@ const AdminPanel : React.FC = () => {
         }
     }
 
-    async function fetchBuildings() {
-        const data = await apiService.getBuildingsAdmin();
-        setTablePopupData(data);
-        let table_columns = Object.keys(data[0]);
-        let table_data = data.map((row) => {
-            return Object.values(row);
-        });
+async function fetchBuildings() {
+    const data = await apiService.getBuildingsAdmin();
+    setTablePopupData(data);
+    let table_columns = Object.keys(data[0]).filter(column => column);
+    let table_data = data.map((row) => {
+        return Object.values(row);
+    });
 
-        table_data.forEach((row) => {
-            try {
-                row[4] = row[4].map((room) => room.number || room.numberSecondary).join(", ");
-            } catch (err) {
-                row[4] = "";
-            }
-        })
+    table_data.forEach((row) => {
+        try {
+            row[4] = row[4].map((room) => room.number || room.numberSecondary).join(", ");
+        } catch (err) {
+            row[4] = "";
+        }
+    });
 
-        setTableColumns(table_columns);
-        setTableData(table_data);
-    }
+    setTableColumns(table_columns);
+    setTableData(table_data);
+
+    let tableColumnsNoId = table_columns;
+    tableColumnsNoId = tableColumnsNoId.filter((column) => column !== "_id");
+    console.log(tableColumnsNoId);
+
+    setTableColumnsNoId(tableColumnsNoId)
+}
 
     async function fetchRooms() {
         const data = await apiService.getRoomsAdmin();
@@ -104,6 +114,12 @@ const AdminPanel : React.FC = () => {
     function handleActionElementEditClick(e: React.MouseEventHandler<HTMLButtonElement>) {
         console.log(e.currentTarget.parentElement?.parentElement?.parentElement.id);
         setSelectedObjectId(e.currentTarget.parentElement?.parentElement?.parentElement.id);
+        setIsCreate(false);
+        setShowEditPopup(true);
+    }
+
+    function handleActionAddElementClick() {
+        setIsCreate(true);
         setShowEditPopup(true);
     }
 
@@ -112,7 +128,8 @@ const AdminPanel : React.FC = () => {
             {(() => {
     switch (tableTitle) {
         case "Budynki":
-            return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId}/> : null;
+            if(isCreate) return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumnsNoId} object_id={selectedObjectId} isCreate={isCreate}/> : null;
+            return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId} isCreate={isCreate}/> : null;
         // Add other cases for different popups here
             case "Sale":
             return null;
@@ -140,7 +157,7 @@ const AdminPanel : React.FC = () => {
                 <div>
                     <h1 className="table_title p-2 pb-0">{tableTitle}</h1>
                     <div className="p-2">
-                        <button className="btn btn-primary mx-1">
+                        <button className="btn btn-primary mx-1" onClick={() => handleActionAddElementClick()}>
                             Dodaj
                         </button>
                         <button className="btn btn-danger mx-1">

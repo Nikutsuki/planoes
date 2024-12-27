@@ -38,6 +38,7 @@ export const UserDefinition = {
         type: [Schema.Types.ObjectId],
         ref: new Course().name,
         default: [],
+        populate: true,
     },
     role: {
         type: Number,

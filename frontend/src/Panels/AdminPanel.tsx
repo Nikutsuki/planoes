@@ -2,6 +2,7 @@ import "./admin_panel.css";
 import {useEffect, useState} from "react";
 import apiService from "../../services/apiService.tsx";
 import BuildingEditPopup from "../Components/Admin/Popups/BuildingEditPopup.tsx";
+import CourseEditPopup from "../Components/Admin/Popups/CourseEditPopup.tsx";
 
 const AdminPanel : React.FC = () => {
     const [entryCount, setEntryCount] = useState({});
@@ -42,10 +43,6 @@ const AdminPanel : React.FC = () => {
             case "users":
                 fetchUsers();
                 setTableTitle("Użytkownicy");
-                break;
-            case "classes":
-                fetchClasses();
-                setTableTitle("Zajęcia");
                 break;
             case "classtypes":
                 fetchClassTypes();
@@ -137,6 +134,7 @@ async function fetchBuildings() {
 
     async function fetchUsers() {
         const data = await apiService.getUsersAdmin();
+        console.log(data)
         setTablePopupData(data);
         let table_columns = Object.keys(data[0]);
         let table_data = data.map((row) => {
@@ -229,6 +227,8 @@ async function fetchBuildings() {
             case "Sale":
             return null;
         case "Kursy":
+            if(isCreate) return showEditPopup ? <CourseEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumnsNoId} object_id={selectedObjectId} isCreate={isCreate}/> : null;
+            return showEditPopup ? <CourseEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId} isCreate={isCreate}/> : null;
             return null;
         default:
             return null;
@@ -239,10 +239,10 @@ async function fetchBuildings() {
                     Budynki
                     <span className="badge bg-primary rounded-pill">{entryCount["buildings"]}</span>
                 </button>
-                <button id="classes" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
-                    Zajęcia
-                    <span className="badge bg-primary rounded-pill">{entryCount["classes"]}</span>
-                </button>
+                {/*<button id="classes" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>*/}
+                {/*    Zajęcia*/}
+                {/*    <span className="badge bg-primary rounded-pill">{entryCount["classes"]}</span>*/}
+                {/*</button>*/}
                 <button id="classtypes" className="d-flex justify-content-between align-items-center button" onClick={handleListButtonClick}>
                     Typy Zajęć
                     <span className="badge bg-primary rounded-pill">{entryCount["classtypes"]}</span>

@@ -154,6 +154,7 @@ const BuildingEditPopup: React.FC<{ onClose: () => void, tableColumns : any, tab
                                     className="form-control"
                                     value={data[column] || ''}
                                     onChange={(e) => setData({...data, [column]: e.target.value})}
+                                    disabled={column === '_id'}
                                 />
                             )}
                         </div>

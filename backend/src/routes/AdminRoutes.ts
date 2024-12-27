@@ -33,10 +33,10 @@ export default class AdminRoutes {
             count = await model_buildings.countDocuments(filter_buildings);
             counts.set('buildings', count);
 
-            const model_classes: Model<HydratedDocumentFromSchema<typeof ClassSchema>> = new ClassController().base.model;
-            const filter_classes: FilterQuery<HydratedDocumentFromSchema<typeof ClassSchema>> = {};
-            count = await model_buildings.countDocuments(filter_classes);
-            counts.set('classes', count);
+            // const model_classes: Model<HydratedDocumentFromSchema<typeof ClassSchema>> = new ClassController().base.model;
+            // const filter_classes: FilterQuery<HydratedDocumentFromSchema<typeof ClassSchema>> = {};
+            // count = await model_buildings.countDocuments(filter_classes);
+            // counts.set('classes', count);
 
             const model_classtypes: Model<HydratedDocumentFromSchema<typeof ClassTypeSchema>> = new ClassTypeController().base.model;
             const filter_classtypes: FilterQuery<HydratedDocumentFromSchema<typeof ClassTypeSchema>> = {};
@@ -99,6 +99,14 @@ export default class AdminRoutes {
 
             const courses = await model_courses.find().limit(10).populate("electiveSubjects")
             res.status(200).json(courses);
+        });
+
+        app.get(this.prefix + '/get_users', async (req: Request, res: Response) => {
+            const model_users: Model<HydratedDocumentFromSchema<typeof UserSchema>> = new UserController().base.model;
+            const filter_users: FilterQuery<HydratedDocumentFromSchema<typeof UserSchema>> = {};
+
+            const users = await model_users.find().limit(10);
+            res.status(200).json(users);
         });
 
         app.post(this.prefix + '/edit_building', async (req: Request, res: Response) => {

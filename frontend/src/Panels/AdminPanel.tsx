@@ -216,18 +216,51 @@ async function fetchBuildings() {
         setShowEditPopup(true);
     }
 
+    function handleActionDeleteElementClick(e: React.MouseEventHandler<HTMLButtonElement>) {
+        let id = e.currentTarget.parentElement?.parentElement?.parentElement.id;
+        let obj = {};
+        obj.id = id;
+        console.log(obj);
+        switch (tableTitle) {
+            case "Budynki":
+                apiService.deleteBuildingAdmin(obj);
+                break;
+            case "Sale":
+                //apiService.deleteRoomAdmin(selectedObjectId);
+                break;
+            case "Kursy":
+                apiService.deleteCourseAdmin(obj);
+                break;
+            case "Użytkownicy":
+                //apiService.deleteUserAdmin(selectedObjectId);
+                break;
+            case "Typy Zajęć":
+                //apiService.deleteClassTypeAdmin(selectedObjectId);
+                break;
+            case "Przedmioty Obieralne":
+                //apiService.deleteElectiveSubjectAdmin(selectedObjectId);
+                break;
+            case "Wydziały":
+                //apiService.deleteFacultyAdmin(selectedObjectId);
+                break;
+            case "Okresy":
+                //apiService.deletePeriodAdmin(selectedObjectId);
+                break;
+            default:
+                break
+        }
+    }
+
     return (
         <div className="container-fluid bg-dark-subtle main">
             {(() => {
     switch (tableTitle) {
         case "Budynki":
-            if(isCreate) return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumnsNoId} object_id={selectedObjectId} isCreate={isCreate}/> : null;
             return showEditPopup ? <BuildingEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId} isCreate={isCreate}/> : null;
         // Add other cases for different popups here
             case "Sale":
             return null;
         case "Kursy":
-            if(isCreate) return showEditPopup ? <CourseEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumnsNoId} object_id={selectedObjectId} isCreate={isCreate}/> : null;
             return showEditPopup ? <CourseEditPopup onClose={() => setShowEditPopup(false)} tableData={tablePopupData} tableColumns={tableColumns} object_id={selectedObjectId} isCreate={isCreate}/> : null;
             return null;
         default:
@@ -306,7 +339,7 @@ async function fetchBuildings() {
                                 <td className="fixed_width">
                                     <div className="table_actions_container">
                                         <button className="btn btn-primary" onClick={handleActionElementEditClick}>Edytuj</button>
-                                        <button className="btn btn-danger">Usuń</button>
+                                        <button className="btn btn-danger" onClick={handleActionDeleteElementClick}>Usuń</button>
                                     </div>
                                 </td>
                             </tr>

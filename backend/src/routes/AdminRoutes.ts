@@ -149,7 +149,8 @@ export default class AdminRoutes {
         });
 
         app.post(this.prefix + '/delete_building', async (req: Request, res: Response) => {
-            const buildingId = req.body.buildingId;
+            const building = JSON.parse(req.body.building);
+            const buildingId = building.id;
             if (!buildingId) {
                 return res.status(400).json({error: 'Building ID is required.'});
             }
@@ -166,6 +167,67 @@ export default class AdminRoutes {
                 }
             } catch (error) {
                 res.status(500).json({error: 'An error occurred while deleting the building.'});
+            }
+        });
+
+        app.post(this.prefix + '/edit_course', async (req: Request, res: Response) => {
+            const course = JSON.parse(req.body.course);
+            const objectId = course._id;
+
+            if (!objectId) {
+                return res.status(400).json({error: 'Course ID is required.'});
+            }
+
+            try {
+                const model_courses: Model<HydratedDocumentFromSchema<typeof CourseSchema>> = new CourseController().base.model;
+
+                const updatedData = course; // Assuming the request body contains the fields to update
+                const updatedCourse = await model_courses.findByIdAndUpdate(objectId, updatedData, {new: true});
+
+                if (updatedCourse) {
+                    res.status(200).json({success: true, updatedCourse});
+                } else {
+                    res.status(404).json({error: 'Course not found.'});
+                }
+            } catch (error) {
+                res.status(500).json({error: 'An error occurred while updating the course.'});
+            }
+        })
+
+        app.post(this.prefix + '/add_course', async (req: Request, res: Response) => {
+            const course = JSON.parse(req.body.course);
+            console.log(course)
+            try {
+                const model_courses: Model<HydratedDocumentFromSchema<typeof CourseSchema>> = new CourseController().base.model;
+
+                const newCourse = new model_courses(course);
+                await newCourse.save();
+
+                res.status(200).json({success: true, newCourse});
+            } catch (error) {
+                res.status(500).json({error: 'An error occurred while creating the course.'});
+            }
+        })
+
+        app.post(this.prefix + '/delete_course', async (req: Request, res: Response) => {
+            const course = JSON.parse(req.body.course);
+            const courseId = course.id;
+            if (!courseId) {
+                return res.status(400).json({error: 'Course ID is required.'});
+            }
+
+            try {
+                const model_courses: Model<HydratedDocumentFromSchema<typeof CourseSchema>> = new CourseController().base.model;
+
+                const deletedCourse = await model_courses.findByIdAndDelete(courseId);
+
+                if (deletedCourse) {
+                    res.status(200).json({success: true, deletedCourse});
+                } else {
+                    res.status(404).json({error: 'Course not found.'});
+                }
+            } catch (error) {
+                res.status(500).json({error: 'An error occurred while deleting the course.'});
             }
         });
     }

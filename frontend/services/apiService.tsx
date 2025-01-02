@@ -15,6 +15,7 @@ import {
     UserPopulated,
 } from './databaseTypes.tsx';
 import Building from "../../backend/src/models/faculty/Building.ts";
+import Course from "../../backend/src/models/courses/Course.ts";
 
 // TODO: replace url with .env variable
 const dbUrl: string = 'https://127.0.0.1:3000';
@@ -110,6 +111,8 @@ export default class APIService {
         return this.fetchAPIResponse('/admin/get_classtypes');
     }
 
+
+
     static async editBuildingAdmin(building: Building) {
         let body = new URLSearchParams();
         body.append('building', JSON.stringify(building));
@@ -156,6 +159,63 @@ export default class APIService {
 
         try {
             const response: Response = await fetch(dbUrl + '/admin/delete_building', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+
+            if (!response.ok) {
+                console.error(response.statusText);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    static async editCourseAdmin(course: Course) {
+        let body = new URLSearchParams();
+        body.append('course', JSON.stringify(course));
+
+        try {
+            const response: Response = await fetch(dbUrl + '/admin/edit_course', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+
+            if (!response.ok) {
+                console.error(response.statusText);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    static async addCourseAdmin(course: Course) {
+        let body = new URLSearchParams();
+        body.append('course', JSON.stringify(course));
+
+        try {
+            const response: Response = await fetch(dbUrl + '/admin/add_course', {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
+
+            if (!response.ok) {
+                console.error(response.statusText);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    static async deleteCourseAdmin(course: Course) {
+        let body = new URLSearchParams();
+        body.append('course', JSON.stringify(course));
+
+        try {
+            const response: Response = await fetch(dbUrl + '/admin/delete_course', {
                 method: 'POST',
                 headers: headers,
                 body: body,
